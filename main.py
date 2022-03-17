@@ -139,10 +139,10 @@ async def on_message(message):
     rpEndTime = rpStartTime + datetime.timedelta(0, 7)
   
   if playingRP and message.author == rpPlayer:
-    if (time_in_range(rpStartTime, rpEndTime, datetime.datetime.now())):
+    if (not time_in_range(rpStartTime, rpEndTime, datetime.datetime.now())):
       await message.channel.send("Sorry, too late. (you took >7 sec to respond)")
-    if (matches(message.content.lower(), rpName)):
-      await message.channel.send("CORRECT! +1 for {}".format(message.author))
+    elif (matches(message.content.lower(), rpName)):
+      await message.channel.send("CORRECT. Good job, <@{}>!".format(message.author.id))
     else:
       await message.channel.send("Wrong. The correct answer is " + rpName)
   
