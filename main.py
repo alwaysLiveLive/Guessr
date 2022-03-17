@@ -139,6 +139,7 @@ async def on_message(message):
     rpEndTime = rpStartTime + datetime.timedelta(0, 7)
   
   if playingRP and message.author == rpPlayer:
+    playingRP = False
     if (not time_in_range(rpStartTime, rpEndTime, datetime.datetime.now())):
       await message.channel.send("Sorry, too late. (you took >7 sec to respond)")
     elif (matches(message.content.lower(), rpName)):
