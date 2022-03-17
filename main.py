@@ -96,14 +96,14 @@ async def on_message(message):
   if randTip != "":
     randTip = "\n" + randTip
   
-  if "934907648690749511" in str(message.mentions):
+  if "953801726534758401" in str(message.mentions):
     if random.randrange(0, 5) == 0:
       await message.reply(createCaseVariation("stop phoogkœn pinging me bruh") + " (prefix is `{}`)".format(p))
   
   if message.reference != None:
     reference_message = await message.channel.fetch_message(int(str(message.reference)[29:47]))
     
-    if "934907648690749511" in str(reference_message):
+    if "953801726534758401" in str(reference_message):
       if random.randrange(0, 5) == 0:
         await message.reply(createCaseVariation("don't phoogkœn rep1y 2 me bruh"))
   
