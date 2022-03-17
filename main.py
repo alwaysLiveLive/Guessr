@@ -2,6 +2,8 @@ import discord
 import os
 import random
 import sys
+import datetime
+from people import randPic, getPic
 
 print(sys.version)
 print(sys.version_info)
@@ -15,7 +17,10 @@ prefix = "g!"
 p = prefix
 
 # temp variables
- 
+playingRP = False
+rpPlayer = None
+rpName = None
+
 # log in message
 @client.event
 async def on_ready():
@@ -70,6 +75,11 @@ def hintWords(st):
       result += c
   return result
 
+def matches(guess, target):
+  guess = guess.lower()
+  target = target.lower()
+  return guess.startswith(target) or guess.endswith(target)
+
 # check if someone has certain permissions
 def hasPerms(member, perms):
   for role in reversed(member.roles):
@@ -85,11 +95,20 @@ async def on_server_join(server):
 # when a message is sent
 @client.event
 async def on_message(message):
+  global playingRP, rpPlayer, rpName
+  
   TOKENS = message.content.split()
   tokens = message.content.lower().split()
   global p
   if message.author == client.user and not message.content.endswith('\u200B'):
     return
+  
+  if message.content.lower().startswith('g!troubleshoot') and message.author.id in devIDList:
+    tbMsg = "prefix: " + p
+    tbMsg += "\nplayingRP: " + str(playingRP)
+    tbMsg += "\nrpPlayer: " + str(rpPlayer)
+    tbMsg += "\nrpName: " + str(rpName)
+    await message.channel.send(tbMsg)
   
   # randTip
   randTip = '\n' + randTips[random.randrange(0, len(randTips))]
@@ -108,14 +127,25 @@ async def on_message(message):
         await message.reply(createCaseVariation("don't phoogkœn rep1y 2 me bruh"))
   
   # prefix commands
-  if message.content.lower().startswith(p + "newsong") or message.content.lower().startswith(p + "ns"):
-    await message.channel.send("new song created")
+  if not playingRP and message.content.lower().startswith(p + "randpic") or message.content.lower().startswith(p + "rp"):
+    rpPlayer = message.author
+    rpName = randPic()
+    pic = getPic(rpName)
+    playingRP = True
+    await message.channel.send("Guess the person! You have 7 seconds.")
+    await message.channel.send(pic)
+    startTime = datetime.datetime.now()
+    endTime = startTime + datetime.timedelta(0, 7)
+  
+  if playingRP and message.author == rpPlayer:
+    if (matches(message.content.lower(), rpName)):
+      await message.channel.send("CORRECT! +1 for {}".format(message.author))
   
   # info
   elif message.content.lower().startswith(p + 'info'):
     infoMessage = "Guessr was created by thisnoaskac#1732 as a cool tool to grow your brain with! :)"
-    if (random.random() < 0.5):
-      infoMessage += "\nJoin the Guessr community! https://discord.gg/YrX4jxKrVR"
+    if (random.random() < 0.35):
+      infoMessage += "\n\nJoin the Guessr community! https://discord.gg/YrX4jxKrVR"
     await message.channel.send(infoMessage + randTip)
   
   elif message.content.lower().startswith(p + 'vote'):
@@ -125,9 +155,10 @@ async def on_message(message):
   
   # help
   elif message.content.lower().startswith(p + 'help'):
-    helpMessage = "see how many servers this bot is in: `{}servers` or `{}guilds`".format(p, p)
-    helpMessage += "\nsettings: `{}settings`".format(p)
-    embed = discord.Embed(title="__**Help**__", url="https://tinyurl.com/youlovethisgamedontyou", description=helpMessage+randTip, color=discord.Color.orange())
+    helpMsg = "see how many servers this bot is in: `{}servers` or `{}guilds`".format(p, p)
+    helpMsg += "\nsettings: `{}settings`".format(p)
+    helpMsg += "\nRandPic Game: `{}randpic` or `{}rp`".format(p, p)
+    embed = discord.Embed(title="__**Help**__", url="https://tinyurl.com/youlovethisgamedontyou", description=helpMsg+randTip, color=discord.Color.orange())
     await message.channel.send(embed=embed)
   
   # settings
@@ -164,6 +195,5 @@ async def on_message(message):
       devListMessage += "\n**" + str(i + 1) + ".** " + devList[i]
     embed = discord.Embed(title="__**Developer List**__", url="https://tinyurl.com/youlovethisgamedontyou", description=devListMessage, color=discord.Color.orange())
     await message.channel.send(embed=embed)
-  # lastMsg = message
   
 client.run(os.getenv('TOKEN'))
