@@ -24,7 +24,7 @@ async def on_ready():
   print("This bot is in " + str(len(client.guilds)) + " servers.")
   await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name="g!help"))
 # random tips
-randTips = ["***TIP:*** Need help using this bot? Trying typing `{}help`.".format(p), "***TIP:*** Ughhhh, I want to change something with this bot!! What do I do? Well-- `{}settings` :)".format(p)]
+randTips = ["***TIP:*** Need help using this bot? Trying typing `{}help`.".format(p), "***TIP:*** Ughhhh, I want to change something with this bot!! What do I do? Well-- `{}settings` :)".format(p), "***TIP:*** Join the Guessr community! https://discord.gg/YrX4jxKrVR"]
 for i in range(18):
   randTips.append("")
 
@@ -114,6 +114,8 @@ async def on_message(message):
   # info
   elif message.content.lower().startswith(p + 'info'):
     infoMessage = "Guessr was created by thisnoaskac#1732 as a cool tool to grow your brain with! :)"
+    if (random.random() < 0.5):
+      infoMessage += "\nJoin the Guessr community! https://discord.gg/YrX4jxKrVR"
     await message.channel.send(infoMessage + randTip)
   
   elif message.content.lower().startswith(p + 'vote'):
