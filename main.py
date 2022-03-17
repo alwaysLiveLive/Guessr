@@ -96,6 +96,7 @@ async def on_server_join(server):
 @client.event
 async def on_message(message):
   global playingRP, rpPlayer, rpName
+  global rpStartTime, rpEndTime
   
   TOKENS = message.content.split()
   tokens = message.content.lower().split()
@@ -134,12 +135,16 @@ async def on_message(message):
     playingRP = True
     await message.channel.send("Guess the person! You have 7 seconds.")
     await message.channel.send(pic)
-    startTime = datetime.datetime.now()
-    endTime = startTime + datetime.timedelta(0, 7)
+    rpStartTime = datetime.datetime.now()
+    rpEndTime = rpStartTime + datetime.timedelta(0, 7)
   
   if playingRP and message.author == rpPlayer:
+    if (time_in_range(rpStartTime, rpEndTime, datetime.datetime.now())):
+      await message.channel.send("Sorry, too late. (you took >7 sec to respond)")
     if (matches(message.content.lower(), rpName)):
       await message.channel.send("CORRECT! +1 for {}".format(message.author))
+    else:
+      await message.channel.send("Wrong. The correct answer is " + rpName)
   
   # info
   elif message.content.lower().startswith(p + 'info'):
